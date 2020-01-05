@@ -1,0 +1,5 @@
+#    1 | steps:     9 | steps_t:     0 | t: 0.039942 | r:  -497.000000 | e:   1.000000 | Q:        nan | won: False 
+#    2 | steps:    19 | steps_t:     0 | t: 0.045608 | r:  -498.000000 | e:   1.000000 | Q:        nan | won: False 
+#    3 | steps:    36 | steps_t:     0 | t: 0.055007 | r:  -505.000000 | e:   1.000000 | Q:        nan | won: False 
+#    4 | steps:    93 | steps_t:     0 | t: 0.086006 | r:  -523.000000 | e:   1.000000 | Q:        nan | won: False 
+#    5 | steps:   155 | steps_t:     0 | t: 0.121291 | r:  -539.000000 | e:   1.000000 | Q:        nan | won: False 
