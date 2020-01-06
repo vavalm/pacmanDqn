@@ -37,6 +37,7 @@ starting at stage nineteen, the ghosts do not become edible at all, but still re
 
 Run the command `sudo docker-compose up`
 Notice: you have to run at least one time the command `xhost local:root` to have the validation games display
+Notice2: to use the GPU for training, you need `nvidia-docker` ([tutorial here](https://github.com/NVIDIA/nvidia-docker)) 
 
 Run a model on `smallGrid` layout for 6000 episodes, of which 5000 episodes
 are used for training. The 1000 episodes remaining is displayed in a window to watch the game

@@ -8,10 +8,10 @@ services:
       context: ./
       dockerfile: Dockerfile
     image: python-pacman-dqn
-    command: "sh -c 'apt update && apt install -qqy python-tk x11-apps
-      && pip install -r requirements.txt
+    command: "sh -c 'pip install -r requirements.txt
       && python pacman.py -p PacmanDQN -n $TOTAL_GAMES_NB -x $TRAINING_GAMES_NB -l $LAYOUT
-      && while sleep 3600; do :; done'"
+#      && while sleep 3600; do :; done
+      '"
     volumes:
       - ./:/usr/src/app
       - /tmp/.X11-unix:/tmp/.X11-unix:rw

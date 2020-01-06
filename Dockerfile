@@ -1,5 +1,6 @@
-FROM python:3.7-slim-buster
-RUN apt-get update
-RUN apt install -qqy python-tk x11-apps
-RUN pip install tensorflow==1.15.0
-RUN pip install numpy
+FROM tensorflow/tensorflow:1.15.0-gpu-py3
+RUN apt update
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y tzdata
+RUN apt install -qqy python3-tk x11-apps
+#RUN pip install --pre "tensorflow==1.15.*"
+RUN pip install numpy tk
