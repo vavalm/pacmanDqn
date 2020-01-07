@@ -4,6 +4,9 @@
 
 import numpy as np
 import tensorflow as tf
+import os
+# tensorflow: INFO and WARNING messages are not printed
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
 class DQN:

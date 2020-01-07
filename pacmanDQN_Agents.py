@@ -10,6 +10,7 @@
 import random
 import time
 import sys
+import os
 
 # Pacman game
 from pacman import Directions
@@ -23,16 +24,16 @@ from DQN import *
 
 params = {
     # Model backups
-    'load_file': None,
+    'load_file': "./saves/model-save_1313438_5817",
     # 'save_file': None,
-    # 'load_file': True,
-    'save_file': "save",
-    'save_interval': 10000,
+    # 'load_file': None,
+    'save_file': str(os.environ['LAYOUT'] + '-' + str(os.environ['TOTAL_GAMES_NB']) + '-' + str(os.environ['TRAINING_GAMES_NB'])),
+    'save_interval': 20000,
 
     # Training parameters
-    'train_start': 1000,  # Episodes before training starts
+    'train_start': 5000,  # Episodes before training starts (and saves take effect)
     'batch_size': 32,  # Replay memory batch size
-    'mem_size': 100000,  # Replay memory size
+    'mem_size': 30000,  # Replay memory size
 
     'discount': 0.95,  # Discount rate (gamma value)
     'lr': .0002,  # Learning reate
@@ -40,7 +41,7 @@ params = {
     # 'rms_eps': 1e-6,        # RMS Prop epsilon (switched to adam)
 
     # Epsilon value (epsilon-greedy)
-    'eps': 1.0,  # Epsilon start value
+    'eps': 1,  # Epsilon start value
     'eps_final': 0.1,  # Epsilon end value
     'eps_step': 10000  # Epsilon steps between start and end (linear)
 }
@@ -49,6 +50,7 @@ params = {
 class PacmanDQN(game.Agent):
     def __init__(self, args):
 
+        print(str(os.environ['TOTAL_GAMES_NB'] + " / " + str(os.environ['TRAINING_GAMES_NB']) + "will be used for training"))
         print("Initialise DQN Agent")
 
         # Load parameters from user-given arguments

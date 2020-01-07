@@ -1,21 +1,24 @@
 # PacmanDQN
 Deep Reinforcement Learning in Pac-man
 
-## Prerequisites
+## 1. Prerequisites
 * linux OS
 * [docker](https://runnable.com/docker/install-docker-on-linux)
 * [docker-compose](https://docs.docker.com/compose/install/). To install it on Linux :
     * sudo curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     * sudo chmod +x /usr/local/bin/docker-compose
     * sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+* GPU cuda compatible + [cuda/cudnn](https://towardsdatascience.com/tensorflow-gpu-installation-made-easy-use-conda-instead-of-pip-52e5249374bc)
+ & [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) installed (optional)
 
 
-## Pacman rules
+## 2. Pacman rules
 ### Context
 The player navigates Pac-Man through a maze with no dead ends. The maze is filled with Pac-Dots, and includes four roving multi-colored ghosts: Blinky, Pinky, Inky, and Clyde. There is a passageway from the left side of the screen to the right side, one energizer in each of the four quadrants appear in each level.
 ### Objective
 The objective of the game is to accumulate as many points as possible by eating dots, and blue ghosts. When all of the dots in a stage are eaten, that stage is completed, and the player will advance to the next. The four ghosts roam the maze and chase Pac-Man. If any of the ghosts touches Pac-Man, a life is lost. When all lives have been lost, the game is over. The player begins with three lives. The player will receive one extra life bonus after obtaining 10,000 points.
 ### Points
+Each dot pacman eat earn 10 points.
 Near the corners of the maze are four flashing energizers that allow Pac-Man to eat the ghosts and earn bonus points. The enemies turn deep blue, reverse direction and move away from Pac-Man, and usually move more slowly. When an enemy is eaten, its eyes return to the center ghost box where the ghost is regenerated in its normal color.
  The bonus score earned for eating a blue ghost increases exponentially for each consecutive ghost eaten while a single energizer is active: 
 * 200 points for eating one ghost, 
@@ -33,30 +36,44 @@ starting at stage nineteen, the ghosts do not become edible at all, but still re
 
 ![Demo](videos/PacmanDQN_wingif.gif)
 
-## Example usage
+## 3. How to execute
 
-Run the command `sudo docker-compose up`
-Notice: you have to run at least one time the command `xhost local:root` to have the validation games display
-Notice2: to use the GPU for training, you need `nvidia-docker` ([tutorial here](https://github.com/NVIDIA/nvidia-docker)) 
+```
+$ xhost local:root
+$ sudo docker-compose up
+```
+Notice: to use the GPU for training, you need `nvidia-docker` ([tutorial here](https://github.com/NVIDIA/nvidia-docker)) 
 
-Run a model on `smallGrid` layout for 6000 episodes, of which 5000 episodes
+### 4. Parameters
+Edit the variables in `.env` file to edit the main parameters:
+* `TOTAL_GAMES_NB`: the number of games which will be played (training games + displayed games)
+* `TRAINING_GAMES_NB`: the number of games which will be used to train the model
+* `LAYOUT`: the map on which pacman will be played
+
+After the training, the games will be displayed on your screen.
+
+Example: Run a model on `smallGrid` layout for 6000 episodes, of which 5000 episodes
 are used for training. The 1000 episodes remaining is displayed in a window to watch the game
-Edit the variables in `.env` file:
+```
+TOTAL_GAMES_NB=6000 
+TRAINING_GAMES_NB=5000
+LAYOUT=smallGrid
+```
 
-### Layout
-Different layouts can be found and created in the `layouts` directory
+#### 4.1 Layout
+Different layouts (= maps) can be found and created in the `layouts` directory.
 For more information, take a look on the [readme file](layouts/README.md) in layout directory.
-Set the value variable `LAYOUT` to the name of the layout you want. 
+Set the value of variable `LAYOUT` to the name of the layout you want. 
 
-### TOTAL_GAMES_NB
+#### 4.2 TOTAL_GAMES_NB
 Represents the total amount of games that will be played.
 The games number for training is equal to TOTAL_GAMES_NB-VALIDATION_GAMES_NB
 
-### VALIDATION_GAMES_NB
+#### 4.3 VALIDATION_GAMES_NB
 Represents the games number played for validation.
 These games will be displayed on your screen
 
-### OTHER Parameters
+#### 4.4 OTHER Parameters
 
 Parameters can be found in the `params` dictionary in `pacmanDQN_Agents.py`. <br />
  <br />
@@ -91,13 +108,7 @@ Number of steps between start and final epsilon value (linear): `eps_step` <br /
 
 * [van der Ouderaa, Tycho (2016). Deep Reinforcement Learning in Pac-man.](https://esc.fnwi.uva.nl/thesis/centraal/files/f323981448.pdf)
 
-## Requirements
-
-- `python>=3.5.1`
-- `tensorflow>=0.8rc`
-- `numpy`
-
-## Acknoledgements
+## Acknowledgements
 
 Article exaplaining deep reinforcement learning for Pacman made by Towards data science
 * [Advanced DQNs: Playing Pac-man with Deep Reinforcement Learning https://towardsdatascience.com/advanced-dqns-playing-pac-man-with-deep-reinforcement-learning-3ffbd99e0814](https://towardsdatascience.com/advanced-dqns-playing-pac-man-with-deep-reinforcement-learning-3ffbd99e0814)
@@ -112,4 +123,4 @@ Pac-man implementation by UC Berkeley:
 * [The Pac-man Projects - UC Berkeley](http://ai.berkeley.edu/project_overview.html) ([http://ai.berkeley.edu/project_overview.html](http://ai.berkeley.edu/project_overview.html))
 
 Pac-man implementation by tychovodo
-* [PacmanDQN](https://github.com/tychovdo/PacmanDQN)
+* [tychovdo/PacmanDQN](https://github.com/tychovdo/PacmanDQN)

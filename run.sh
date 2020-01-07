@@ -3,7 +3,6 @@
 # Total number of episodes:          1000000
 # Total number of training episodes: 100000
 # Level:                             mediumClassic
-
 sudo docker build -t python-pacman-dqn .
 sudo docker-compose up -d
 
