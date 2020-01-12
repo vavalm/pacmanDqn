@@ -10,7 +10,7 @@
 import random
 import time
 import sys
-import os
+import action_points as pt
 
 # Pacman game
 from pacman import Directions
@@ -22,18 +22,27 @@ from collections import deque
 # Neural nets
 from DQN import *
 
+savefile = str(os.getenv('SAVE_FILE'))
+if savefile == "None":
+    savefile = None
+
+VAL_GAMES_NB = str(os.getenv('VAL_GAMES_NB'))
+TRAINING_GAMES_NB = str(os.getenv('TRAINING_GAMES_NB'))
+TOTAL_GAMES_NUMBER = str(int(VAL_GAMES_NB) + int(TRAINING_GAMES_NB))
+LAYOUT = os.getenv('LAYOUT')
+
 params = {
     # Model backups
-    'load_file': "./saves/model-save_1313438_5817",
+    'load_file': savefile,
+    'save_file': str(LAYOUT + '-' + TOTAL_GAMES_NUMBER + '-' + TRAINING_GAMES_NB),
     # 'save_file': None,
     # 'load_file': None,
-    'save_file': str(os.environ['LAYOUT'] + '-' + str(os.environ['TOTAL_GAMES_NB']) + '-' + str(os.environ['TRAINING_GAMES_NB'])),
-    'save_interval': 20000,
+    'save_interval': 10000,
 
     # Training parameters
     'train_start': 5000,  # Episodes before training starts (and saves take effect)
     'batch_size': 32,  # Replay memory batch size
-    'mem_size': 30000,  # Replay memory size
+    'mem_size': 100000,  # Replay memory size
 
     'discount': 0.95,  # Discount rate (gamma value)
     'lr': .0002,  # Learning reate
@@ -43,21 +52,23 @@ params = {
     # Epsilon value (epsilon-greedy)
     'eps': 1,  # Epsilon start value
     'eps_final': 0.1,  # Epsilon end value
-    'eps_step': 10000  # Epsilon steps between start and end (linear)
+    'eps_step': int(TRAINING_GAMES_NB) * 100  # Epsilon steps between start and end (linear)
 }
 
 
 class PacmanDQN(game.Agent):
     def __init__(self, args):
 
-        print(str(os.environ['TOTAL_GAMES_NB'] + " / " + str(os.environ['TRAINING_GAMES_NB']) + "will be used for training"))
+        print('##################################################################################')
+        print(str(TOTAL_GAMES_NUMBER + " / " + TRAINING_GAMES_NB + " games will be used for training"))
         print("Initialise DQN Agent")
+        print('##################################################################################')
 
         # Load parameters from user-given arguments
         self.params = params
         self.params['width'] = args['width']
         self.params['height'] = args['height']
-        self.params['num_training'] = args['numTraining']
+        # self.params['num_training'] = args['numTraining']
 
         # Start Tensorflow session
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1)
@@ -145,20 +156,21 @@ class PacmanDQN(game.Agent):
             self.last_score = self.current_score
 
             if reward > 20:
-                self.last_reward = 50.  # Eat ghost   (Yum! Yum!)
+                self.last_reward = pt.EAT_GHOST  # Eat ghost   (Yum! Yum!)
             elif reward > 0:
-                self.last_reward = 10.  # Eat food    (Yum!)
+                self.last_reward = pt.FOOD  # Eat food    (Yum!)
             elif reward < -10:
-                self.last_reward = -500.  # Get eaten   (Ouch!) -500
+                self.last_reward = pt.EATEN_BY_GHOST  # Get eaten   (Ouch!) -500
                 self.won = False
             elif reward < 0:
-                self.last_reward = -1.  # Punish time (Pff..)
+                self.last_reward = pt.TIME_PUNISHMENT  # Punish time (Pff..)
 
             if (self.terminal and self.won):
-                self.last_reward = 100.
+                self.last_reward = pt.WIN # YOU WIN !
             self.ep_rew += self.last_reward
 
-            # Store last experience into memory 
+            # TODO: add game number in the file (currently if we launch multiple time a training with loading file option we don't know the total game amount
+            # Store last experience into memory
             experience = (self.last_state, float(self.last_reward), self.last_action, self.current_state, self.terminal)
             self.replay_mem.append(experience)
             if len(self.replay_mem) > self.params['mem_size']:
@@ -197,7 +209,10 @@ class PacmanDQN(game.Agent):
 
         # Print stats
         log_file = open('./logs/' + str(self.general_record_time) + '-l-' + str(self.params['width']) + '-m-' + str(
-            self.params['height']) + '-x-' + str(self.params['num_training']) + '.log', 'a')
+            self.params['height']) + '-x-' 
+                        # + str(self.params['num_training']) + 
+                        '-' + LAYOUT + '-' +
+            TOTAL_GAMES_NUMBER + '-' + TRAINING_GAMES_NB + '.log', 'a')
         log_file.write("# %4d | steps: %5d | steps_t: %5d | t: %4f | r: %12f | e: %10f " %
                        (self.numeps, self.local_cnt, self.cnt, time.time() - self.s, self.ep_rew, self.params['eps']))
         log_file.write("| Q: %10f | won: %r \n" % ((max(self.Q_global, default=float('nan')), self.won)))

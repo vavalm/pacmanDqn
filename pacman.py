@@ -50,6 +50,7 @@ import layout
 import sys
 import random
 import os
+import action_points as pt
 
 
 ###################################################
@@ -120,7 +121,7 @@ class GameState:
 
         # Time passes
         if agentIndex == 0:
-            state.data.scoreChange += -TIME_PENALTY  # Penalty for waiting around
+            state.data.scoreChange += pt.TIME_PUNISHMENT # Penalty for waiting around
         else:
             GhostRules.decrementTimer(state.data.agentStates[agentIndex])
 
@@ -270,9 +271,7 @@ class GameState:
 # You shouldn't need to look through the code in this section of the file. #
 ############################################################################
 
-SCARED_TIME = 40  # Moves ghosts are scared
 COLLISION_TOLERANCE = 0.7  # How close ghosts must be to Pacman to kill
-TIME_PENALTY = 1  # Number of points lost each round
 
 
 class ClassicGameRules:
@@ -396,7 +395,7 @@ class PacmanRules:
             state.data._capsuleEaten = position
             # Reset all ghosts' scared timers
             for index in range(1, len(state.data.agentStates)):
-                state.data.agentStates[index].scaredTimer = SCARED_TIME
+                state.data.agentStates[index].scaredTimer = pt.SCARED_TIME
 
     consume = staticmethod(consume)
 
@@ -467,14 +466,14 @@ class GhostRules:
 
     def collide(state, ghostState, agentIndex):
         if ghostState.scaredTimer > 0:
-            state.data.scoreChange += 200
+            state.data.scoreChange += pt.EAT_GHOST
             GhostRules.placeGhost(state, ghostState)
             ghostState.scaredTimer = 0
             # Added for first-person
             state.data._eaten[agentIndex] = True
         else:
             if not state.data._win:
-                state.data.scoreChange -= 500
+                state.data.scoreChange += pt.EATEN_BY_GHOST
                 state.data._lose = True
 
     collide = staticmethod(collide)
@@ -528,8 +527,8 @@ def readCommand(argv):
     """
     parser = OptionParser(usageStr)
 
-    parser.add_option('-n', '--numGames', dest='numGames', type='int',
-                      help=default('the number of GAMES to play'), metavar='GAMES', default=6000)
+    parser.add_option('-n', '--valGames', dest='valGames', type='int',
+                      help=default('the number of validation GAMES to play (id displayed)'), metavar='GAMES', default=10)
     parser.add_option('-l', '--layout', dest='layout',
                       help=default(
                           'the LAYOUT_FILE from which to load the map layout'),
@@ -618,7 +617,7 @@ def readCommand(argv):
         import graphicsDisplay
         args['display'] = graphicsDisplay.PacmanGraphics(
             options.zoom, frameTime=options.frameTime)
-    args['numGames'] = options.numGames
+    args['valGames'] = options.valGames
     args['record'] = options.record
     args['catchExceptions'] = options.catchExceptions
     args['timeout'] = options.timeout
@@ -689,12 +688,14 @@ def replayGame(layout, actions, display):
     display.finish()
 
 
-def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, catchExceptions=False, timeout=30):
+def runGames(layout, pacman, ghosts, display, valGames, record, numTraining=0, catchExceptions=False, timeout=30):
     import __main__
     __main__.__dict__['_display'] = display
 
     rules = ClassicGameRules(timeout)
     games = []
+
+    numGames = valGames + numTraining
 
     for i in range(numGames):
         beQuiet = i < numTraining
@@ -722,7 +723,7 @@ def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, c
             pickle.dump(components, f)
             f.close()
 
-    if (numGames - numTraining) > 0:
+    if valGames > 0:
         scores = [game.state.getScore() for game in games]
         wins = [game.state.isWin() for game in games]
         winRate = wins.count(True) / float(len(wins))

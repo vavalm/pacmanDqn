@@ -3,10 +3,11 @@
 # https://github.com/mrkulk/deepQN_tensorflow
 
 import numpy as np
-import tensorflow as tf
 import os
 # tensorflow: INFO and WARNING messages are not printed
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+import tensorflow as tf
+from tensorflow.python.util import deprecation
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 
 class DQN:
@@ -49,8 +50,8 @@ class DQN:
         o2_shape = self.o2.get_shape().as_list()
 
         # Layer 3 (Fully connected)
-        layer_name = 'fc3';
-        hiddens = 256;
+        layer_name = 'fc3'
+        hiddens = 256
         dim = o2_shape[1] * o2_shape[2] * o2_shape[3]
         self.o2_flat = tf.reshape(self.o2, [-1, dim], name=self.network_name + '_' + layer_name + '_input_flat')
         self.w3 = tf.Variable(tf.random_normal([dim, hiddens], stddev=0.01),

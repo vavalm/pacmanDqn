@@ -3,16 +3,17 @@ version: '3.7'
 services:
   pacman_dqn:
     working_dir: /usr/src/app
+    container_name: pacman_dqn
     build:
       context: ./
       dockerfile: Dockerfile
     image: python-pacman-dqn
-    command: "sh -c 'python pacman.py -p PacmanDQN -n ${TOTAL_GAMES_NB} -x ${TRAINING_GAMES_NB} -l ${LAYOUT}'"
+    command: "/bin/bash -c 'python pacman.py -p PacmanDQN -n ${VAL_GAMES_NB} -x ${TRAINING_GAMES_NB} -l ${LAYOUT}'"
+    env_file: .env
     volumes:
       - ./:/usr/src/app
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
-    env_file: .env
     environment:
       - DISPLAY
       - XAUTHORITY=/tmp/.docker.xauth

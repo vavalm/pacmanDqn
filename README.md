@@ -46,18 +46,21 @@ Notice: to use the GPU for training, you need `nvidia-docker` ([tutorial here](h
 
 ### 4. Parameters
 Edit the variables in `.env` file to edit the main parameters:
-* `TOTAL_GAMES_NB`: the number of games which will be played (training games + displayed games)
-* `TRAINING_GAMES_NB`: the number of games which will be used to train the model
+* `TRAINING_GAMES_NB`: the number of games used to train the model
+* `VAL_GAMES_NB`: the number of games used for validation
 * `LAYOUT`: the map on which pacman will be played
 
 After the training, the games will be displayed on your screen.
 
-Example: Run a model on `smallGrid` layout for 6000 episodes, of which 5000 episodes
-are used for training. The 1000 episodes remaining is displayed in a window to watch the game
+Example: Run a model on `smallGrid` layout for 6000 episodes
+After the training, 10 episodes will be displayed and used for validation
+We load a previous trained model with the file `model-mediumClassic-50000-50000_1248620_6448`
+
 ```
-TOTAL_GAMES_NB=6000 
-TRAINING_GAMES_NB=5000
+TRAINING_GAMES_NB=6000 
+VAL_GAMES_NB=10
 LAYOUT=smallGrid
+SAVE_FILE=./saves/mediumClassic/model-mediumClassic-50000-50000_1248620_6448
 ```
 
 #### 4.1 Layout
