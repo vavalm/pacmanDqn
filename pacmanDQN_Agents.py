@@ -52,7 +52,7 @@ params = {
     # Epsilon value (epsilon-greedy)
     'eps': 1,  # Epsilon start value
     'eps_final': 0.1,  # Epsilon end value
-    'eps_step': int(TRAINING_GAMES_NB) * 100  # Epsilon steps between start and end (linear)
+    'eps_step': int(int(TRAINING_GAMES_NB)*0.75)  # Epsilon steps between start and end (linear)
 }
 
 
@@ -189,8 +189,12 @@ class PacmanDQN(game.Agent):
         # Next
         self.local_cnt += 1
         self.frame += 1
-        self.params['eps'] = max(self.params['eps_final'],
-                                 1.00 - float(self.cnt) / float(self.params['eps_step']))
+        try:
+            self.params['eps'] = max(self.params['eps_final'],
+                                     1.00 - float(self.cnt) / float(self.params['eps_step']))
+        except ZeroDivisionError:
+            self.params['eps'] = 0.1
+
 
     def observationFunction(self, state):
         # Do observation
